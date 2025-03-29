@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>✨ وكيل برمجة AI Pro v4.3 (Corrected) ✨</title>
+
+    <!-- Prism.js CSS (Theme: Tomorrow Night) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <!-- Prism Line Numbers Plugin CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet" />
+
+    <style>
+        /* --- CSS Variables (Enhanced Theme) --- */
+        :root {
+            --bg-primary: #1a1c23; --bg-secondary: #282a36; --bg-tertiary: #3a3c4a;
+            --bg-gradient-start: rgba(70, 73, 90, 0.3); --bg-gradient-end: rgba(50, 52, 65, 0.1);
+            --text-primary: #f0f0f0; --text-secondary: #c8a8ff; --text-muted: #6272a4;
+            --accent-primary: #82eefd; --accent-secondary: #55fabe; --accent-error: #ff6060;
+            --accent-warning: #ffb86c; --font-sans: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            --font-mono: 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+            --border-radius: 10px; /* Slightly larger radius */
+            --transition-speed: 0.3s; /* Slightly slower for smoother feel */
+            --transition-speed-fast: 0.15s;
+            --shadow-color: rgba(0, 0, 0, 0.3); /* Slightly darker shadow */
+            --shadow-inset: rgba(0,0,0,0.35);
+            --input-bar-height: 75px; /* Increased height */
+        }
+        /* --- Reset & Global Styles --- */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { height: 100%; font-size: 16px; scroll-behavior: smooth; }
+        body { height: 100%; font-family: var(--font-sans); background-color: var(--bg-primary); color: var(--text-primary); overflow: hidden; display: flex; flex-direction: column; direction: ltr; }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); border-radius: 6px; }
+        ::-webkit-scrollbar-thumb { background-color: var(--bg-tertiary); border-radius: 6px; border: 2px solid var(--bg-secondary); transition: background-color var(--transition-speed-fast) ease; }
+        ::-webkit-scrollbar-thumb:hover { background-color: var(--text-muted); }
+        /* --- Main Layout Container --- */
+        .editor-preview-container { flex-grow: 1; display: flex; overflow: hidden; padding: 15px; gap: 15px; padding-bottom: calc(var(--input-bar-height) + 15px); transition: padding var(--transition-speed) ease; }
+        /* --- Code Display & Run Sections --- */
+        .code-display-section, .run-section-container { display: flex; flex-direction: column; background-color: var(--bg-secondary); border: 1px solid var(--bg-tertiary); border-radius: var(--border-radius); overflow: hidden; transition: all var(--transition-speed) ease-in-out, opacity var(--transition-speed) ease, transform var(--transition-speed) ease; resize: horizontal; min-width: 300px; flex-basis: 50%; box-shadow: 0 8px 25px var(--shadow-color); }
+        .run-section-container.preview-hidden { flex-basis: 0 !important; width: 0 !important; min-width: 0 !important; padding: 0 !important; margin-left: -15px !important; /* Overlap slightly when hidden */ border: none !important; opacity: 0 !important; overflow: hidden !important; resize: none !important; box-shadow: none !important; transform: translateX(-20px); pointer-events: none; } /* Added pointer-events: none */
+        /* --- Toolbars --- */
+        .editor-toolbar, .preview-toolbar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end)), var(--bg-tertiary); border-bottom: 1px solid var(--bg-primary); flex-shrink: 0; direction: rtl; transition: background-color var(--transition-speed) ease; }
+        .filename, .toolbar-title { font-weight: 600; font-size: 1em; color: var(--text-primary); }
+        .toolbar-buttons { display: flex; align-items: center; gap: 8px; }
+        .toolbar-buttons button { background: none; border: none; color: var(--accent-primary); cursor: pointer; padding: 7px; line-height: 0; transition: color var(--transition-speed-fast) ease, background-color var(--transition-speed-fast) ease, transform var(--transition-speed-fast) ease; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; }
+        .toolbar-buttons button:hover:not(:disabled) { color: var(--text-primary); background-color: rgba(255, 255, 255, 0.15); transform: scale(1.1); } /* Added :not(:disabled) */
+        .toolbar-buttons button:active:not(:disabled) { transform: scale(0.95); } /* Added :not(:disabled) */
+        .toolbar-buttons button:disabled { color: var(--text-muted) !important; background-color: transparent !important; cursor: not-allowed; transform: none !important; opacity: 0.6; }
+        .toolbar-buttons button svg { width: 18px; height: 18px; stroke-width: 2; }
+        /* --- Code Editor --- */
+        .code-wrapper { flex-grow: 1; overflow: hidden; position: relative; }
+        pre[class*="language-"] { height: 100%; overflow: auto !important; margin: 0 !important; padding: 18px !important; font-family: var(--font-mono); font-size: 0.95em; line-height: 1.5; /* Ensure consistent line height */ white-space: pre; word-wrap: normal; background-color: var(--bg-secondary) !important; border-radius: 0 0 var(--border-radius) var(--border-radius) !important; --color: var(--text-primary); transition: background-color var(--transition-speed) ease; }
+        .line-numbers .line-numbers-rows { border-right: 1px solid var(--bg-tertiary) !important; background: var(--bg-secondary); padding-top: 18px !important; padding-bottom: 18px !important; transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;}
+        .line-numbers-rows > span:before { color: var(--text-muted) !important; font-size: 0.9em; transition: color var(--transition-speed) ease;}
+        /* --- Preview --- */
+        #output-frame { width: 100%; height: 100%; border: none; background-color: #ffffff; flex-grow: 1; border-radius: 0 0 var(--border-radius) var(--border-radius); transition: opacity var(--transition-speed) ease; }
+        /* --- Fixed Input Section --- */
+        .input-section { position: fixed; bottom: 0; left: 0; right: 0; display: flex; padding: 15px 20px; border-top: 1px solid var(--bg-tertiary); background: linear-gradient(to top, rgba(0,0,0,0.35), transparent), var(--bg-primary); z-index: 100; min-height: var(--input-bar-height); align-items: flex-end; /* Align bottom for growing textarea */ gap: 15px; direction: rtl; box-shadow: 0 -6px 20px var(--shadow-color); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, opacity var(--transition-speed) ease; }
+        .input-section.disabled { opacity: 0.8; pointer-events: none; } /* Style for disabled input section */
+        #user-input { flex-grow: 1; min-height: 46px; max-height: 180px; padding: 12px 18px; border: 1px solid var(--bg-tertiary); border-radius: var(--border-radius); background-color: var(--bg-secondary); color: var(--text-primary); font-family: var(--font-sans); font-size: 1.1em; resize: none; line-height: 1.65; overflow-y: auto; transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease; direction: rtl; box-shadow: inset 0 2px 5px var(--shadow-inset); }
+        #user-input:focus { outline: none; border-color: var(--accent-primary); background-color: #303240; /* Slightly lighter on focus */ box-shadow: 0 0 0 3.5px rgba(130, 238, 253, 0.4), inset 0 2px 5px var(--shadow-inset); }
+        #user-input:disabled { background-color: var(--bg-tertiary); opacity: 0.7; cursor: not-allowed; } /* Explicit disabled style */
+        #send-button { background: linear-gradient(145deg, var(--accent-secondary), #44e0a1); color: var(--bg-primary); border: none; padding: 0; height: 46px; border-radius: var(--border-radius); cursor: pointer; font-weight: bold; transition: background var(--transition-speed) ease, transform var(--transition-speed-fast) ease, box-shadow var(--transition-speed) ease; flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 8px; direction: ltr; width: 55px; box-shadow: 0 4px 10px rgba(85, 250, 190, 0.4); }
+        #send-button svg { width: 22px; height: 22px; stroke-width: 2.2; }
+        #send-button:hover:not(:disabled) { background: linear-gradient(145deg, #62ffc6, #55fabe); transform: translateY(-2px) scale(1.03); box-shadow: 0 6px 14px rgba(85, 250, 190, 0.5); } /* Added :not(:disabled) */
+        #send-button:active:not(:disabled) { transform: scale(0.96) translateY(0px); box-shadow: 0 3px 7px rgba(85, 250, 190, 0.35); } /* Added :not(:disabled) */
+        #send-button:disabled { background: var(--text-muted); color: var(--bg-secondary); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
+        /* --- Loader & Toast --- */
+        .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); background-color: rgba(40, 42, 54, 0.97); color: var(--accent-primary); padding: 30px 40px; border-radius: var(--border-radius); font-size: 1.2em; font-weight: 600; z-index: 1001; display: flex; align-items: center; gap: 10px; opacity: 0; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5); transition: opacity 0.3s ease, transform 0.3s ease; backdrop-filter: blur(4px); pointer-events: none; }
+        .loader::before { content: '⏳'; animation: spin 1.5s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader.visible { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+        .toast { position: fixed; bottom: 25px; left: 50%; transform: translate(-50%, 20px); padding: 13px 25px; border-radius: var(--border-radius); font-size: 1em; font-weight: 600; z-index: 1002; opacity: 0; transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28); pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-width: 90%; text-align: center; }
+        .toast { background-color: var(--accent-secondary); color: var(--bg-primary); } /* Default success */
+        .toast.visible { opacity: 1; transform: translate(-50%, 0); bottom: calc(var(--input-bar-height) + 30px); }
+        .toast.error { background-color: var(--accent-error); color: var(--text-primary); }
+        .toast.warning { background-color: var(--accent-warning); color: var(--bg-primary); }
+        /* --- Fullscreen Mode --- */
+        .fullscreen-mode { padding: 0 !important; gap: 0 !important; padding-bottom: 0 !important; }
+        body.fullscreen-active .input-section { display: none; }
+        .fullscreen-element { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; z-index: 1000 !important; border-radius: 0 !important; border: none !important; margin: 0 !important; resize: none !important; box-shadow: none !important; }
+        .fullscreen-element .editor-toolbar, .fullscreen-element .preview-toolbar { border-radius: 0; }
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .editor-preview-container { flex-direction: column; padding: 10px; gap: 10px; padding-bottom: calc(var(--input-bar-height) + 10px); }
+            .code-display-section, .run-section-container { flex-basis: auto !important; width: 100%; height: 50%; min-height: 220px; resize: vertical; min-width: unset; box-shadow: 0 5px 15px var(--shadow-color); }
+            .run-section-container.preview-hidden { min-height: 0 !important; height: 0 !important; margin-left: 0 !important; transform: translateY(-10px); }
+            :root { --input-bar-height: 70px; }
+            .input-section { padding: 12px 15px; gap: 12px; align-items: flex-end; }
+            #user-input { min-height: 44px; padding: 10px 16px; font-size: 1.05em; max-height: 140px; }
+            #send-button { height: 44px; width: 52px; }
+            #send-button svg { width: 20px; height: 20px;}
+            .toolbar-buttons { gap: 6px; }
+            .toolbar-buttons button { width: 32px; height: 32px; padding: 6px;}
+            .toolbar-buttons button svg { width: 17px; height: 17px;}
+            .editor-toolbar, .preview-toolbar { padding: 8px 12px; }
+            .filename, .toolbar-title { font-size: 0.95em; }
+            pre[class*="language-"] { font-size: 0.9em; padding: 14px !important;}
+            .line-numbers .line-numbers-rows { padding-top: 14px !important; padding-bottom: 14px !important;}
+            .toast { width: calc(100% - 30px); bottom: 15px; font-size: 0.95em; padding: 11px 20px; }
+            .toast.visible { bottom: calc(var(--input-bar-height) + 20px); }
+            .loader { padding: 25px 35px; font-size: 1.1em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Define SVG Icons (No change needed as requested) -->
+    <svg width="0" height="0" style="position:absolute">
+      <defs>
+        <svg id="icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        <svg id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+        <svg id="icon-maximize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+        <svg id="icon-minimize" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path></svg>
+        <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <svg id="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <svg id="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+        <svg id="icon-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        <svg id="icon-external-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+        <svg id="icon-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </defs>
+    </svg>
+
+    <div class="editor-preview-container" id="main-container">
+        <!-- Code Editor Section -->
+        <div class="code-display-section" id="editor-pane">
+            <div class="editor-toolbar">
+                <span class="filename" id="filename-display" dir="rtl">index.html (مع CSS/JS مضمن)</span>
+                <div class="toolbar-buttons">
+                    <button id="fullscreen-editor-button" title="ملء الشاشة للمحرر"><svg><use xlink:href="#icon-maximize"></use></svg></button>
+                    <button id="copy-button" title="نسخ الكود"><svg><use xlink:href="#icon-copy"></use></svg></button>
+                    <button id="clear-button" title="مسح المحرر والمحادثة"><svg><use xlink:href="#icon-trash"></use></svg></button>
+                </div>
+            </div>
+            <div class="code-wrapper">
+                 <pre class="line-numbers language-html" id="code-pre"><code id="code-output" class="language-html"><!-- Code goes here --></code></pre>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="run-section-container" id="preview-pane">
+             <div class="preview-toolbar">
+                <span class="toolbar-title" dir="rtl">المعاينة</span>
+                <div class="toolbar-buttons">
+                    <button id="fullscreen-preview-button" title="ملء الشاشة للمعاينة"><svg><use xlink:href="#icon-maximize"></use></svg></button>
+                    <button id="open-new-tab-button" title="فتح في نافذة جديدة"><svg><use xlink:href="#icon-external-link"></use></svg></button>
+                    <button id="refresh-button" title="تحديث المعاينة"><svg><use xlink:href="#icon-refresh"></use></svg></button>
+                    <button id="toggle-preview-button" title="إخفاء/إظهار المعاينة"><svg><use xlink:href="#icon-eye"></use></svg></button>
+                    <button id="run-button" title="تشغيل الكود"><svg><use xlink:href="#icon-play"></use></svg></button>
+                </div>
+            </div>
+            <iframe id="output-frame" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+        </div>
+    </div>
+
+    <!-- Fixed Input Bar -->
+    <div class="input-section" id="input-section">
+        <textarea id="user-input" placeholder="اكتب طلبك هنا لإنشاء أو تعديل الكود..." rows="1"></textarea>
+        <button id="send-button" title="إرسال الطلب"><svg><use xlink:href="#icon-send"></use></svg></button>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">جاري الإنشاء...</div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast-notification"></div>
+
+    <!-- Prism.js Core & Languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <!-- Prism Plugins -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+
+    <script>
+        // --- UI Elements ---
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const codeOutput = document.getElementById('code-output');
+        const codePre = document.getElementById('code-pre');
+        const filenameDisplay = document.getElementById('filename-display');
+        const runButton = document.getElementById('run-button');
+        const togglePreviewButton = document.getElementById('toggle-preview-button');
+        const copyButton = document.getElementById('copy-button');
+        const clearButton = document.getElementById('clear-button');
+        const refreshButton = document.getElementById('refresh-button');
+        const openNewTabButton = document.getElementById('open-new-tab-button');
+        const fullscreenEditorButton = document.getElementById('fullscreen-editor-button');
+        const fullscreenPreviewButton = document.getElementById('fullscreen-preview-button');
+        const outputFrame = document.getElementById('output-frame');
+        const previewPane = document.getElementById('preview-pane');
+        const editorPane = document.getElementById('editor-pane');
+        const mainContainer = document.getElementById('main-container');
+        const loader = document.getElementById('loader');
+        const toast = document.getElementById('toast-notification');
+        const inputSection = document.getElementById('input-section'); // Get input section for disabling
+
+        // --- API Settings ---
+        // WARNING: Hardcoding API keys in client-side code is insecure.
+        // This should be handled by a backend proxy in a real application.
+        const GEMINI_API_KEY = "AIzaSyAJ5AVTVNbNiOTatAKH1VI3q_9eJppclYE"; // YOUR KEY - INSECURE!
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`; // Using gemini-1.5-flash as an example
+
+        // --- State ---
+        let isTyping = false;
+        let isPreviewVisible = true;
+        let currentToastTimeout;
+        let isEditorFullscreen = false;
+        let isPreviewFullscreen = false;
+        let conversationHistory = [];
+
+        // --- SVG Icon Definitions ---
+        const svgIconEye = '<svg><use xlink:href="#icon-eye"></use></svg>';
+        const svgIconEyeOff = '<svg><use xlink:href="#icon-eye-off"></use></svg>';
+        const svgIconMaximize = '<svg><use xlink:href="#icon-maximize"></use></svg>';
+        const svgIconMinimize = '<svg><use xlink:href="#icon-minimize"></use></svg>';
+
+        // --- System Prompt (v4.3 - Enhanced for Complexity & Length) ---
+        const systemPrompt = `**ABSOLUTELY CRITICAL: Your *ONLY* output must be the raw HTML code content.**
+**DO NOT include ANY explanations, introductions, summaries, comments outside the code itself, or markdown formatting like \`\`\`html ... \`\`\` wrappers.**
+**Start your response *directly* with \`<!DOCTYPE html>\` or \`<html>\`.**
+
+You are a Senior Full-Stack Developer AI assistant specializing in creating rich, interactive, and visually engaging web applications.
+
+Your goal is to generate a **single, complete, runnable HTML file** based on the user's request. You MUST embed all necessary CSS within \`<style>\` tags and all necessary JavaScript within \`<script>\` tags directly in the HTML file.
+
+**Key Objectives & Guidelines:**
+
+1.  **Generate Comprehensive Code:** Aim to produce substantial, well-structured code. Fulfill the user's request thoroughly. Create complete components or even small applications, not just snippets. **Think big** – if the user asks for a "platform," design a significant-looking interface, even if the backend logic is simulated. **Generate longer, more detailed code** than a basic example would require.
+2.  **Context is Crucial:** Analyze the *entire* conversation history ('contents' array). Modify or extend the *previous* code provided by the 'model' role based on the latest 'user' prompt. Treat the last model response as the current state of the code.
+3.  **Modern Aesthetics & UX:**
+    *   Use semantic HTML5. Employ Flexbox and/or Grid for robust layouts.
+    *   Utilize CSS Variables for theming. Create visually appealing designs: good spacing, typography, color harmony, subtle but effective transitions, and shadows. Target a professional, polished look and feel.
+    *   Ensure layouts are responsive using media queries.
+4.  **Rich Interactivity:**
+    *   Implement JavaScript functionality requested by the user efficiently.
+    *   Use modern JS practices (\`addEventListener\`, \`const\`/\`let\`, arrow functions where appropriate).
+    *   Place scripts just before the closing \`</body>\` tag.
+    *   **Security (Iframe Context):** When adding event listeners to elements *within the generated code*, use \`event.stopPropagation()\` inside the listener's callback if the event might otherwise bubble up and interfere with the host page (this tool). Example: \`myButton.addEventListener('click', (event) => { event.stopPropagation(); /* your interactive code here */ });\`
+5.  **Simulate Complexity:** For requests involving data or backend logic (like user login, fetching data), simulate the behavior on the frontend using JavaScript (e.g., hardcoded data arrays, mock API responses, simple state management).
+6.  **Single File Output:** Remember, despite potentially embedding large amounts of CSS and JS, the entire output MUST be a single block of raw HTML code.
+
+**FINAL REMINDER: Output ONLY the raw HTML code. No extra text, no markdown, just the code starting with \`<!DOCTYPE html>\` or \`<html>\`.**`;
+
+
+        // --- Utility Functions ---
+        function showLoader() { loader.classList.add('visible'); }
+        function hideLoader() { loader.classList.remove('visible'); }
+
+        function showToast(message, duration = 2500, type = 'success') {
+            clearTimeout(currentToastTimeout);
+            toast.textContent = message;
+            toast.className = 'toast'; // Reset classes
+            toast.classList.add(type); // Add type class (success, error, warning)
+            requestAnimationFrame(() => {
+                toast.classList.add('visible');
+            });
+            currentToastTimeout = setTimeout(() => {
+                toast.classList.remove('visible');
+            }, duration);
+        }
+
+        function updateLineNumbers() {
+            // Use a small timeout to ensure the DOM has updated after potential content changes
+            setTimeout(() => {
+                if (typeof Prism !== 'undefined' && Prism.plugins && Prism.plugins.lineNumbers && codePre) {
+                    // Remove the initialized class to force Prism to recalculate
+                    codePre.classList.remove('line-numbers-initialized');
+                    Prism.highlightElement(codeOutput, false, () => { // Highlight and then resize in callback
+                        Prism.plugins.lineNumbers.resize(codePre);
+                        // Re-add the initialized class after resizing is done
+                         codePre.classList.add('line-numbers-initialized');
+                    });
+                } else if (codePre) {
+                     // If Prism isn't fully loaded or line numbers plugin is missing, at least clear existing numbers
+                     const lineNumbersRows = codePre.querySelector('.line-numbers-rows');
+                     if (lineNumbersRows) lineNumbersRows.innerHTML = '';
+                 }
+            }, 50); // 50ms delay often sufficient
+        }
+
+
+        function highlightCode() {
+             // Check if Prism and the necessary element exist
+            if (typeof Prism !== 'undefined' && codeOutput) {
+                 // Ensure the language class is present for Prism
+                codeOutput.className = 'language-html'; // Reset class just in case
+                 Prism.highlightElement(codeOutput, false, updateLineNumbers); // Use async highlighting and update lines in callback
+             } else {
+                 console.warn("Prism.js or code output element not ready for highlighting.");
+                 updateLineNumbers(); // Still try to update/clear line numbers
+             }
+        }
+
+        // --- Typing Animation ---
+        function typeCode(element, code, callback) {
+            isTyping = true;
+            element.textContent = ''; // Clear existing content
+            setButtonsDisabled(true);
+            let i = 0;
+            const typingSpeed = 1; // Lower = Faster (implicitly via chunk size)
+            const chunkSize = 40; // INCREASED chunk size for faster perceived typing
+            const preElement = element.closest('pre'); // Get the parent <pre> for scrolling
+
+            function typeWriter() {
+                if (i < code.length) {
+                    const chunk = code.substring(i, Math.min(i + chunkSize, code.length));
+                    element.textContent += chunk;
+                    i += chunkSize;
+                    // Auto-scroll the <pre> element
+                    if (preElement) {
+                         preElement.scrollTop = preElement.scrollHeight;
+                    }
+                    requestAnimationFrame(typeWriter); // Use rAF for smoother animation loop
+                } else {
+                    isTyping = false;
+                    setButtonsDisabled(false);
+                    // Highlight *after* typing is fully complete
+                    highlightCode();
+                    if (callback) {
+                        // Use a small delay for the callback to ensure highlighting/rendering is done
+                        setTimeout(callback, 50);
+                    }
+                }
+            }
+            // Start typing slightly delayed to allow UI to settle
+            setTimeout(typeWriter, 30);
+        }
+
+        // --- Core API Function (With Enhanced Prompt & History) ---
+        async function generateCode(prompt) {
+            if (isTyping) return;
+            showLoader();
+            setButtonsDisabled(true);
+
+            // Filter out any accidental system prompts from history before sending
+            const cleanHistory = conversationHistory.filter(item => item.role !== 'system');
+
+            const apiContents = [
+                ...cleanHistory, // Include previous turns
+                { role: "user", parts: [{ text: prompt }] } // Add the new user prompt
+            ];
+
+            const requestBody = {
+                contents: apiContents,
+                systemInstruction: {
+                     parts: [{ text: systemPrompt }]
+                },
+                generationConfig: {
+                    "temperature": 0.75,
+                    "maxOutputTokens": 8192,
+                },
+                 safetySettings: [
+                   { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                   { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                   { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_MEDIUM_AND_ABOVE" },
+                   { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_MEDIUM_AND_ABOVE" }
+                 ]
+            };
+
+            console.log("Sending to API:", JSON.stringify(requestBody, null, 2));
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+
+                // Always hide loader and attempt to re-enable buttons regardless of response status initially
+                hideLoader();
+
+                const data = await response.json();
+                console.log("API Raw Response Data:", data); // Log raw response
+
+                if (!response.ok) {
+                     console.error("API Error Response:", data);
+                     let errorMsg = `API Error ${response.status}: ${data?.error?.message || response.statusText || 'Unknown error'}`;
+                     if (data?.promptFeedback?.blockReason) {
+                         errorMsg = `Blocked: ${data.promptFeedback.blockReason}.`;
+                         if(data.promptFeedback.safetyRatings) console.warn("Safety Ratings:", data.promptFeedback.safetyRatings);
+                     } else if (response.status === 400 && data?.error?.message?.includes('API key not valid')) {
+                        errorMsg += ' (Invalid API Key)';
+                    } else if (response.status === 429) {
+                        errorMsg += ' (Rate limit exceeded. Wait.)';
+                    } else if (response.status === 500) {
+                         errorMsg += ' (Server Error on API side)';
+                    }
+                    // Throw error to be caught by the catch block, which handles UI reset
+                    throw new Error(errorMsg);
+                }
+
+                 // Check for candidates array and content
+                const candidate = data.candidates?.[0];
+                if (!candidate) {
+                    // Handle cases where response is OK but no candidates (e.g., filters)
+                    let reason = "No candidates returned.";
+                     if (data?.promptFeedback?.blockReason) {
+                         reason = `Blocked: ${data.promptFeedback.blockReason}.`;
+                         if (data.promptFeedback.safetyRatings) console.warn("Safety Ratings:", data.promptFeedback.safetyRatings);
+                     } else if (candidate?.finishReason === 'SAFETY') { // Check candidate finish reason too
+                        reason = "Content generation stopped due to safety filters.";
+                        if (candidate.safetyRatings) console.log("Candidate Safety Ratings:", candidate.safetyRatings);
+                     }
+                     throw new Error(reason);
+                }
+
+                let generatedText = candidate?.content?.parts?.[0]?.text || '';
+                const finishReason = candidate?.finishReason;
+                if (candidate?.safetyRatings) console.log("Candidate Safety Ratings:", candidate.safetyRatings);
+
+                console.log("Finish Reason:", finishReason);
+
+                let toastType = 'success';
+                let toastMessage = "✅ تم إنشاء الكود بنجاح!";
+
+                // Handle specific finish reasons that indicate issues or incomplete results
+                if (finishReason === 'SAFETY') {
+                    // Throw error as it's a blocking issue
+                    throw new Error("Content generation stopped due to safety filters.");
+                } else if (finishReason === 'MAX_TOKENS') {
+                    console.warn(`Generation stopped due to maximum token limit.`);
+                    toastMessage = `⚠️ الكود قد يكون غير مكتمل (حد أقصى).`; toastType = 'warning';
+                } else if (finishReason === 'RECITATION') {
+                     console.warn(`Generation stopped due to recitation policy.`);
+                     toastMessage = `⚠️ توقف الإنشاء بسبب سياسة الاقتباس.`; toastType = 'warning';
+                } else if (finishReason && !['STOP', 'OTHER'].includes(finishReason)) { // Warn for other non-STOP reasons
+                    console.warn(`Generation finished with non-STOP reason: ${finishReason}`);
+                    toastMessage = `⚠️ انتهى الإنشاء بسبب: ${finishReason}`; toastType = 'warning';
+                }
+
+                // Check if content is actually empty AFTER checking reasons
+                if (!generatedText && finishReason !== 'SAFETY') {
+                    console.warn("Empty response content:", data);
+                    toastMessage = "⚠️ لم يتم إرجاع محتوى من النموذج."; toastType = 'warning';
+                    generatedText = "<!-- No content returned by AI -->"; // Placeholder
+                 }
+
+
+                // Clean output: Remove potential markdown wrappers
+                 if (generatedText && generatedText !== "<!-- No content returned by AI -->") {
+                     generatedText = generatedText.replace(/^```(?:html|markup|xml)?\s*([\s\S]*?)\s*```$/i, '$1').trim();
+                 }
+
+
+                // Update history *only* if valid, non-placeholder text was generated
+                if (generatedText && generatedText !== "<!-- No content returned by AI -->") {
+                    // Add user prompt to clean history
+                    cleanHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    // Add model response to clean history
+                    cleanHistory.push({ role: "model", parts: [{ text: generatedText }] });
+                    // Update the main history variable
+                    conversationHistory = cleanHistory;
+
+                    // Limit history size
+                    const MAX_HISTORY_TURNS = 10; // Keep last 10 turns (20 messages)
+                    if (conversationHistory.length > MAX_HISTORY_TURNS * 2) {
+                        conversationHistory = conversationHistory.slice(-MAX_HISTORY_TURNS * 2);
+                        console.log(`Trimmed conversation history to last ${MAX_HISTORY_TURNS} turns.`);
+                    }
+
+                    // Display code with typing animation
+                    typeCode(codeOutput, generatedText, () => {
+                         showToast(toastMessage, 3000, toastType); // Show toast after typing
+                         runCode(); // Automatically run code after successful generation
+                    });
+                } else {
+                     // If no valid code generated (empty or placeholder), show the relevant toast
+                     // and ensure buttons are re-enabled.
+                     if (toastType === 'success') { // Should not happen if logic above is correct, but as fallback
+                         toastMessage = "⚠️ لم يتم إنشاء كود صالح."; toastType = 'warning';
+                     }
+                     showToast(toastMessage, 4000, toastType);
+                     setButtonsDisabled(false); // Re-enable buttons as generation didn't produce usable output
+                 }
+
+            } catch (error) {
+                console.error("Generation failed:", error);
+                hideLoader(); // Ensure loader is hidden on error
+                setButtonsDisabled(false); // Ensure buttons are re-enabled on error
+                // Display a user-friendly error message in the code area
+                codeOutput.textContent = `⚠️ خطأ في إنشاء الكود:\n\n${error.message}\n\nيرجى المحاولة مرة أخرى أو تعديل طلبك.\nتحقق من وحدة التحكم (F12) للحصول على تفاصيل فنية.`;
+                highlightCode(); // Highlight the error message
+                showToast(`❌ ${error.message}`, 6000, 'error');
+                isTyping = false; // Ensure typing state is reset on error
+            }
+        }
+
+        // --- Other Core Functions ---
+        function runCode() {
+            if (isTyping) return;
+            const codeToRun = codeOutput.textContent || ""; // Ensure it's a string
+
+            // Check if code is empty, placeholder, or an error message
+             if (!codeToRun.trim() || codeToRun.startsWith("<!-- No content") || codeToRun.startsWith("⚠️ خطأ")) {
+                showToast("📝 لا يوجد كود صالح لتشغيله!", 2000, 'warning');
+                outputFrame.srcdoc = '<!-- No valid code to run -->'; // Clear preview
+                return;
+             }
+
+            if (!isPreviewVisible) {
+                togglePreviewVisibility(); // Show preview if hidden
+            }
+
+            try {
+                // Use srcdoc for security and direct HTML injection
+                outputFrame.srcdoc = codeToRun;
+                // Use a small delay for the toast to allow iframe to start loading
+                 setTimeout(() => {
+                    showToast("🚀 تم تشغيل الكود في المعاينة", 1500, 'success'); // Explicitly success
+                }, 100);
+
+                // Scroll preview into view on mobile after running
+                if (window.innerWidth <= 768 && isPreviewVisible) {
+                     setTimeout(() => { // Ensure pane is visible before scrolling
+                        previewPane.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 200);
+                 }
+            } catch (e) {
+                console.error("Error setting srcdoc:", e);
+                showToast("❌ خطأ في عرض المعاينة. قد يكون الكود غير صالح.", 3000, 'error');
+                 outputFrame.srcdoc = `<html><body style="font-family: sans-serif; padding: 1em; color: red;"><h1>Error Rendering Preview</h1><pre>${e.message}</pre></body></html>`;
+            }
+        }
+        function copyCode() {
+             if (isTyping) return; // Prevent copying during typing
+             const code = codeOutput.textContent || "";
+             if (!code.trim() || code.startsWith("<!-- No content") || code.startsWith("⚠️ خطأ")) {
+                 showToast("لا يوجد كود صالح لنسخه!", 2000, 'warning'); return;
+             }
+             navigator.clipboard.writeText(code).then(() => {
+                 showToast("✅ تم نسخ الكود بنجاح!", 2000, 'success');
+             }).catch(err => {
+                 console.error('Failed to copy code: ', err);
+                 showToast("❌ فشل نسخ الكود! (قد تحتاج إلى تفعيل الإذن)", 3000, 'error');
+             });
+        }
+        function clearEditor() {
+            if (isTyping) return;
+            // Optional: Confirmation dialog
+            // if (!confirm("هل أنت متأكد من أنك تريد مسح المحرر وسجل المحادثة؟")) {
+            //     return;
+            // }
+            codeOutput.textContent = ''; // Clear code display
+            outputFrame.srcdoc = '<!-- Cleared -->'; // Clear preview pane
+            conversationHistory = []; // Clear conversation history
+            console.log("Cleared editor and conversation history.");
+            highlightCode(); // Update highlighting (clears numbers too)
+            showToast("🗑️ تم مسح المحرر وسجل المحادثة", 2000, 'success');
+            userInput.value = ''; // Clear input field
+            userInput.style.height = 'auto'; // Reset input height
+        }
+        function refreshPreview() {
+             if (isTyping) {
+                 showToast("⏳ يرجى الانتظار حتى يكتمل إنشاء الكود", 1500, 'warning');
+                 return;
+             }
+             showToast("🔄 جاري تحديث المعاينة...", 1000, 'success');
+             runCode(); // Simply re-run the current code
+         }
+        function openInNewTab() {
+             if (isTyping) return;
+             const code = codeOutput.textContent || "";
+             if (!code.trim() || code.startsWith("<!-- No content") || code.startsWith("⚠️ خطأ")) {
+                 showToast("لا يوجد كود صالح لفتحه!", 2000, 'warning'); return;
+             }
+             try {
+                 const blob = new Blob([code], { type: 'text/html' });
+                 const url = URL.createObjectURL(blob);
+                 const newWindow = window.open(url, '_blank');
+                 if (newWindow) {
+                     showToast("↗️ تم الفتح في نافذة جديدة", 2000, 'success');
+                     // Optional: Revoke URL after a delay
+                     // setTimeout(() => URL.revokeObjectURL(url), 60000);
+                 } else {
+                     // This usually happens due to popup blockers
+                     throw new Error("Popup blocked or failed to open.");
+                 }
+             }
+             catch (error) {
+                 console.error("Failed to open in new tab:", error);
+                 showToast(`❌ فشل الفتح (${error.message})`, 3500, 'error');
+             }
+        }
+
+        // --- UI Interaction Functions ---
+         function togglePreviewVisibility() {
+            if (isPreviewFullscreen) return; // Don't hide if it's fullscreen
+            isPreviewVisible = !isPreviewVisible;
+            previewPane.classList.toggle('preview-hidden', !isPreviewVisible);
+            togglePreviewButton.innerHTML = isPreviewVisible ? svgIconEye : svgIconEyeOff;
+            togglePreviewButton.title = isPreviewVisible ? 'إخفاء المعاينة' : 'إظهار المعاينة';
+
+             // Adjust editor flex-basis smoothly
+             editorPane.style.flexBasis = isPreviewVisible ? '50%' : '100%';
+             editorPane.style.minWidth = isPreviewVisible ? '300px' : '100%';
+
+             mainContainer.classList.toggle('preview-is-hidden', !isPreviewVisible);
+             outputFrame.style.opacity = isPreviewVisible ? 1 : 0;
+
+             // Re-highlight/resize line numbers after transition if preview is shown again
+             if (isPreviewVisible) {
+                 setTimeout(highlightCode, 300); // Delay matches CSS transition
+             }
+         }
+
+         function toggleFullscreen(pane) {
+             const body = document.body;
+             const isEditor = pane === editorPane;
+             const currentFullscreenPane = isEditorFullscreen ? editorPane : (isPreviewFullscreen ? previewPane : null);
+             const button = isEditor ? fullscreenEditorButton : fullscreenPreviewButton;
+             const otherPane = isEditor ? previewPane : editorPane;
+
+             // If trying to fullscreen a pane while the *other* is already fullscreen, exit the other first
+             if (currentFullscreenPane && currentFullscreenPane !== pane) {
+                 toggleFullscreen(currentFullscreenPane); // Exit existing fullscreen
+                 // Use setTimeout to allow exit transition before entering new fullscreen
+                 setTimeout(() => toggleFullscreen(pane), 100); // Short delay
+                 return;
+             }
+
+             const enteringFullscreen = !pane.classList.contains('fullscreen-element');
+
+             body.classList.toggle('fullscreen-active', enteringFullscreen);
+             pane.classList.toggle('fullscreen-element', enteringFullscreen);
+             otherPane.style.display = enteringFullscreen ? 'none' : ''; // Hide other pane
+
+             if (isEditor) {
+                 isEditorFullscreen = enteringFullscreen;
+                 button.innerHTML = isEditorFullscreen ? svgIconMinimize : svgIconMaximize;
+                 button.title = isEditorFullscreen ? 'الخروج من وضع ملء الشاشة' : 'ملء الشاشة للمحرر';
+                 // Re-highlight and update line numbers after transition/resize
+                 setTimeout(highlightCode, enteringFullscreen ? 350 : 150); // Longer delay needed when entering FS for layout shift
+             } else {
+                 isPreviewFullscreen = enteringFullscreen;
+                 button.innerHTML = isPreviewFullscreen ? svgIconMinimize : svgIconMaximize;
+                 button.title = isPreviewFullscreen ? 'الخروج من وضع ملء الشاشة' : 'ملء الشاشة للمعاينة';
+                  // Disable hide preview button when preview is fullscreen
+                 togglePreviewButton.disabled = isPreviewFullscreen;
+             }
+
+             // Update aria-pressed attribute for accessibility
+             button.setAttribute('aria-pressed', enteringFullscreen.toString());
+         }
+
+         function setButtonsDisabled(disabled) {
+             // Select all buttons in toolbars and the send button
+             const buttons = document.querySelectorAll('.toolbar-buttons button, #send-button');
+             buttons.forEach(button => {
+                  // Special handling for toggle preview button
+                 if (button.id === 'toggle-preview-button') {
+                     // Disable toggle only if preview is fullscreen OR if we are generally disabling
+                     button.disabled = isPreviewFullscreen || disabled;
+                 } else {
+                     button.disabled = disabled;
+                 }
+             });
+             userInput.disabled = disabled; // Disable text area
+             inputSection.classList.toggle('disabled', disabled); // Add visual cue to input section
+         }
+
+
+        // --- Event Listeners ---
+        sendButton.addEventListener('click', () => {
+            const prompt = userInput.value.trim();
+             if (prompt && !isTyping) {
+                 generateCode(prompt);
+                 // Keep input value for context, maybe? Or clear it:
+                 // userInput.value = '';
+                 // userInput.style.height = 'auto'; // Reset height if clearing
+             } else if (!prompt) {
+                 showToast("⚠️ يرجى كتابة طلبك أولاً!", 2000, 'warning');
+             } else if (isTyping) {
+                  showToast("⏳ يرجى الانتظار حتى يكتمل الطلب الحالي.", 1500, 'warning');
+             }
+         });
+
+        userInput.addEventListener('keypress', (event) => {
+            // Send on Enter, allow newline with Shift+Enter
+            if (event.key === 'Enter' && !event.shiftKey && !isTyping) { // Also check isTyping
+                event.preventDefault(); // Prevent default newline
+                sendButton.click(); // Trigger send button click
+            }
+        });
+
+        userInput.addEventListener('input', () => {
+            // Auto-resize textarea based on content height, respecting max-height
+            userInput.style.height = 'auto'; // Reset height to calculate scrollHeight correctly
+            const scrollHeight = userInput.scrollHeight;
+            const maxHeight = parseInt(window.getComputedStyle(userInput).maxHeight) || 180; // Fallback max height
+            userInput.style.height = Math.min(scrollHeight, maxHeight) + 'px';
+        });
+
+        // Attach listeners to buttons
+        runButton.addEventListener('click', runCode);
+        togglePreviewButton.addEventListener('click', togglePreviewVisibility);
+        copyButton.addEventListener('click', copyCode);
+        clearButton.addEventListener('click', clearEditor);
+        refreshButton.addEventListener('click', refreshPreview);
+        openNewTabButton.addEventListener('click', openInNewTab);
+        fullscreenEditorButton.addEventListener('click', () => toggleFullscreen(editorPane));
+        fullscreenPreviewButton.addEventListener('click', () => toggleFullscreen(previewPane));
+
+        // Global listener for Escape key to exit fullscreen
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' || e.key === 'Esc') { // Check both names for compatibility
+                if (isEditorFullscreen) {
+                    toggleFullscreen(editorPane);
+                 } else if (isPreviewFullscreen) {
+                     toggleFullscreen(previewPane);
+                 }
+            }
+        });
+
+        // --- Initial Setup ---
+        // Initial welcome code (can be updated)
+        const initialCode = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ AI Pro Coder - جاهز!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        :root {
+            --bg-gradient: linear-gradient(140deg, #82eefd 0%, #55fabe 100%);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --text-dark: #282a36;
+            --text-light: #4a4a4a;
+            --accent: #bd93f9;
+            --radius: 15px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            --font-main: 'Tajawal', 'Segoe UI', system-ui, sans-serif;
+            --font-mono: 'Fira Code', Consolas, monospace;
+        }
+        body {
+            font-family: var(--font-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 96vh; /* Use min-height */
+            margin: 0;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box; /* Include padding in height calculation */
+        }
+        .welcome-card {
+            background-color: var(--card-bg);
+            padding: 40px 55px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            max-width: 600px;
+            width: 90%; /* Ensure it fits smaller screens */
+            animation: fadeInScale 0.6s ease-out forwards;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        @keyframes fadeInScale {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        h1 {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-size: 2.2em; /* Slightly adjusted */
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        p {
+            font-size: 1.15em; /* Slightly adjusted */
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 15px; /* Added margin */
+        }
+        strong {
+            color: var(--accent);
+            font-weight: 700;
+        }
+        code {
+            background-color: rgba(0,0,0,0.08);
+            padding: 3px 8px;
+            border-radius: 5px;
+            font-family: var(--font-mono);
+            font-size: 0.9em;
+            color: #e91e63;
+        }
+        .features {
+            font-size: 1.0em; /* Slightly adjusted */
+            margin-top: 25px;
+            color: #555;
+            font-weight: bold; /* Make features stand out */
+        }
+         /* Ensure clicks inside iframe don't affect parent */
+         button, a { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="welcome-card">
+        <h1>🚀 وكيل البرمجة AI Pro</h1>
+        <p>أهلاً بك! اكتب وصفًا تفصيليًا لما تريد إنشاؤه أو تعديله في <strong>صندوق الإدخال</strong> بالأسفل.</p>
+        <p>يمكنني فهم السياق، البناء على الطلبات السابقة، وتضمين <code>CSS</code> و <code>JavaScript</code> لإنشاء واجهات متكاملة.</p>
+        <p class="features">✨ جاهز لتلقي طلباتك البرمجية! ✨</p>
+    </div>
+    <script>
+        // Example script for welcome card interaction
+        console.log("AI Pro Coder Initialized!");
+        const card = document.querySelector('.welcome-card');
+        if (card) {
+             card.addEventListener('click', (event) => {
+                 // IMPORTANT: Prevent click from bubbling up to parent window elements if needed
+                 event.stopPropagation();
+                 console.log('Welcome card clicked (inside iframe)!');
+                 card.style.transition = 'transform 0.2s ease-out';
+                 card.style.transform = 'scale(1.01)';
+                 setTimeout(() => { card.style.transform = 'scale(1)'; }, 200);
+             });
+        }
+        // Add stopPropagation to common interactive elements if necessary
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('click', e => e.stopPropagation());
+        });
+    <\/script> <? /* Closing tag fix */ ?>
+</body>
+</html>`;
+
+        // --- Initialize ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial state and code
+            codeOutput.textContent = initialCode;
+            highlightCode(); // Highlight initial code
+            setButtonsDisabled(false); // Ensure buttons are enabled
+            isPreviewVisible = true;
+            previewPane.classList.remove('preview-hidden');
+            togglePreviewButton.innerHTML = svgIconEye;
+            togglePreviewButton.title = 'إخفاء المعاينة';
+            userInput.style.height = 'auto'; // Adjust initial height
+
+            // Run initial code in preview *after* DOM is ready
+            runCode();
+
+            console.log("AI Coder Pro v4.3 (Corrected) Initialized. All functions should be working.");
+            console.warn("SECURITY WARNING: Your Gemini API Key is hardcoded in the client-side JavaScript. This is highly insecure and should NOT be done in production. Use a backend proxy server to handle API calls securely.");
+        });
+
+    </script>
+</body>
+</html>
